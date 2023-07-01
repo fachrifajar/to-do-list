@@ -1,5 +1,5 @@
 const ModalDelete = () => {
-  return <>test</>;
+  return <>test </>;
 };
 
 export default ModalDelete;
