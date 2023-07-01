@@ -8,14 +8,6 @@ type MyComponentProps = {
   disabled?: boolean;
   isLoading?: boolean;
   sx?: SxProps;
-  // color?:
-  //   | "inherit"
-  //   | "primary"
-  //   | "secondary"
-  //   | "success"
-  //   | "error"
-  //   | "info"
-  //   | "warning";
   color?: any;
   component?: any;
   variant?: "text" | "outlined" | "contained";
