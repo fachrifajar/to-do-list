@@ -1,11 +1,16 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { lighten } from "polished";
 import { Typography, Box, ThemeProvider } from "@mui/material";
-import ContainerTemplate from "./components/atoms/template/container";
+
+// COMPONENTS
+import ContainerTemplate from "./components/atoms/template/Container";
 import Navbar from "./components/organisms/Navbar";
 import ButtonTemplate from "./components/atoms/template/Button";
 import CustomTheme from "./theme";
 
 function App() {
+  const navigate = useNavigate();
   const storedTheme = localStorage.getItem("selectedTheme");
   const initialMode: "light" | "dark" =
     storedTheme === "light" || storedTheme === "dark" ? storedTheme : "light";
@@ -28,7 +33,6 @@ function App() {
           <Box
             sx={{
               position: "relative",
-              display: { md: "block", sm: "block", xs: "none" },
             }}>
             <Box
               sx={{
@@ -38,14 +42,13 @@ function App() {
                 background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
                 position: "absolute",
                 top: 250,
-                right: 100,
+                right: { md: 100, sm: 100, xs: 20 },
               }}
             />
           </Box>
           <Box
             sx={{
               position: "relative",
-              display: { md: "block", sm: "block", xs: "none" },
             }}>
             <Box
               sx={{
@@ -77,9 +80,16 @@ function App() {
             </Typography>
             <ButtonTemplate
               title="Get Started"
+              onClick={() => navigate("/post")}
               sx={{
                 color: "white",
                 background: `linear-gradient(45deg, ${primaryColor} 30%, ${secondaryColor} 90%)`,
+                "&:hover": {
+                  background: `linear-gradient(45deg, ${lighten(
+                    0.1,
+                    primaryColor
+                  )} 30%, ${lighten(0.1, secondaryColor)} 90%)`,
+                },
               }}
             />
 
@@ -87,9 +97,10 @@ function App() {
               sx={{
                 display: { md: "none", sm: "none", xs: "block" },
                 "& img": {
-                  margin: "10% 30% 0 0",
+                  margin: "20% 0 0 0",
                   width: "60%",
                   height: "60%",
+                  rotate: "45deg",
                 },
               }}>
               <img src="/home-1.png" alt="home-1" />
@@ -98,7 +109,6 @@ function App() {
           <Box
             sx={{
               position: "relative",
-              display: { md: "block", sm: "block", xs: "none" },
             }}>
             <Box
               sx={{
@@ -107,7 +117,7 @@ function App() {
                 borderRadius: "50%",
                 background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
                 position: "absolute",
-                top: -150,
+                top: { md: -150, sm: -150, xs: -300 },
                 left: 0,
               }}
             />

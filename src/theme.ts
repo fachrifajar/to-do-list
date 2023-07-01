@@ -22,7 +22,7 @@ const CustomTheme = (mode: "light" | "dark"): Theme =>
       } as CustomTypeText,
       background: {
         default: mode === "light" ? "#f1f5f9" : "#212121",
-        paper: mode === "light" ? "#e5e7eb" : "#111827",
+        paper: mode === "light" ? "#fafafa" : "#616161",
       },
     },
   });
