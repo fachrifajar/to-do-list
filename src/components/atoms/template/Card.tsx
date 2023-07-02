@@ -4,17 +4,22 @@ import { Card, SxProps, CardActionArea } from "@mui/material";
 type MyComponentProps = {
   sx?: SxProps;
   children?: React.ReactElement;
+  onClick?: (event: React.MouseEvent) => void;
 };
 
-const CardTemplate: React.FC<MyComponentProps> = ({ sx, children }) => {
+const CardTemplate: React.FC<MyComponentProps> = ({
+  sx,
+  children,
+  onClick,
+}) => {
   return (
     <>
       <Card
-        onClick={() => console.log("masux")}
+        onClick={onClick}
         sx={{
-          width: { md: "220px", sm: "220px", xs: "50%" },
+          width: { md: "220px", sm: "220px", xs: "49%" },
           height: "30vh",
-          m: { md: "0 0.5% 1% 0.5%", sm: "0 0.5% 1% 0.5%", xs: "0 0 3% 0" },
+          m: { md: "0 0.5% 1% 0.5%", sm: "0 0.5% 1% 0.5%", xs: "0 1% 3% 0" },
           borderRadius: "20px",
           ...sx,
         }}>

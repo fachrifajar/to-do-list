@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { lighten } from "polished";
 import { ThemeProvider, Box, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import CustomTheme from "../theme";
 
 import Navbar from "../components/organisms/Navbar";
 import ButtonTemplate from "../components/atoms/template/Button";
 import ContainerTemplate from "../components/atoms/template/Container";
 import CardPost from "../components/molecules/Card-post";
-import CustomTheme from "../theme";
+import ModalDelete from "../components/molecules/Modal-delete";
+import ModalSuccess from "../components/molecules/Modal-success";
 
 const Post = () => {
   interface ListItem {
@@ -29,12 +31,18 @@ const Post = () => {
   const secondaryColor = theme.palette.secondary.main;
 
   const [list, setList] = React.useState<ListItem[]>([]);
+  const [modalDeleteOpen, setModalDeleteOpen] = React.useState({
+    isOpen: false,
+    id: 0,
+    title: "",
+  });
+  const [modalSuccessOpen, setModalSuccessOpen] = React.useState(false);
 
   const handleGetList = async () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/activity-groups?email=${
-          import.meta.env.VITE_EMAIL
+          import.meta.env.VITE_EMAIL_ENCODED
         }`
       );
 
@@ -46,17 +54,33 @@ const Post = () => {
 
   const handleDeleteList = async (getId: number) => {
     try {
-      const response = await axios.delete(
+      await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/activity-groups/:id?id=${getId}`
       );
-      console.log(response);
 
       handleGetList();
-      // setIsModalOpen(false);
+      setModalDeleteOpen((prevValue) => ({
+        ...prevValue,
+        isOpen: false,
+      }));
 
-      // setisModalInformationOpen(true);
+      setModalSuccessOpen(true);
     } catch (error) {
       console.log("ERROR deleteActivityGroupList", error);
+    }
+  };
+
+  const handleAddList = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/activity-groups`, {
+        title: "New Activity",
+        email: import.meta.env.VITE_EMAIL_DECODED,
+        _comment: "-",
+      });
+
+      handleGetList();
+    } catch (error) {
+      console.log("ERROR createActivityGroupList", error);
     }
   };
 
@@ -92,6 +116,7 @@ const Post = () => {
             </Typography>
             <ButtonTemplate
               title="ADD TASK"
+              onClick={handleAddList}
               endIcon={<AddIcon />}
               sx={{
                 width: "150px",
@@ -110,30 +135,61 @@ const Post = () => {
           </Box>
 
           <Box display="flex" flexWrap="wrap" justifyContent="center">
-            {list?.map((item, key) => {
-              const createdTime = new Date(item?.created_at);
-              const formattedDate = createdTime.toLocaleString("en-US", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                second: "numeric",
-              });
+            {list?.length ? (
+              list?.map((item, key) => {
+                const createdTime = new Date(item?.created_at);
+                const formattedDate = createdTime.toLocaleString("en-US", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  second: "numeric",
+                });
 
-              return (
-                <CardPost
-                  key={key}
-                  title={item?.title}
-                  date={formattedDate}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    console.log("xxx");
-                  }}
-                />
-              );
-            })}
+                return (
+                  <CardPost
+                    key={key}
+                    title={item?.title}
+                    date={formattedDate}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setModalDeleteOpen({
+                        isOpen: true,
+                        id: item?.id,
+                        title: item?.title,
+                      });
+                    }}
+                  />
+                );
+              })
+            ) : (
+              <img src="/no-list.png" alt="no list" />
+            )}
           </Box>
+          <ModalDelete
+            open={modalDeleteOpen?.isOpen}
+            onClose={() => {
+              setModalDeleteOpen((prevValue) => ({
+                ...prevValue,
+                isOpen: false,
+              }));
+            }}
+            title={modalDeleteOpen?.title}
+            handleDelete={() => handleDeleteList(modalDeleteOpen?.id)}
+            handleCancel={() =>
+              setModalDeleteOpen((prevValue) => ({
+                ...prevValue,
+                isOpen: false,
+              }))
+            }
+          />
+
+          <ModalSuccess
+            open={modalSuccessOpen}
+            onClose={() => setModalSuccessOpen(false)}
+            title={modalDeleteOpen?.title}
+          />
         </ContainerTemplate>
       </ThemeProvider>
     </>
