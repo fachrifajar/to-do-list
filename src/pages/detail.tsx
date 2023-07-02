@@ -11,6 +11,7 @@ import Navbar from "../components/organisms/Navbar";
 import ContainerTemplate from "../components/atoms/template/Container";
 import ButtonTemplate from "../components/atoms/template/Button";
 import TextFieldTemplate from "../components/atoms/template/TextField";
+import ModalAddEdit from "../components/molecules/Modal-Add-Edit";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
@@ -35,6 +36,10 @@ const Detail = () => {
     value: "",
     isErr: false,
     errMsg: "",
+  });
+  const [modalAdd, setModalAdd] = React.useState({
+    value: false,
+    status: "",
   });
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,6 +151,13 @@ const Detail = () => {
                 }}
               />
               <ButtonTemplate
+                onClick={() =>
+                  setModalAdd((prevValue) => ({
+                    ...prevValue,
+                    value: true,
+                    status: "add",
+                  }))
+                }
                 title="ADD"
                 sx={{
                   marginTop: "0px",
@@ -164,6 +176,17 @@ const Detail = () => {
               />
             </Box>
           </Box>
+
+          <ModalAddEdit
+            open={modalAdd?.value}
+            onClose={() =>
+              setModalAdd((prevValue) => ({
+                ...prevValue,
+                value: false,
+              }))
+            }
+            status={modalAdd?.status}
+          />
         </ContainerTemplate>
       </ThemeProvider>
     </>

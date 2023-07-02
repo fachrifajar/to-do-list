@@ -53,7 +53,7 @@ const ModalDelete: React.FC<MyComponentProps> = ({
             <ButtonTemplate
               title="CANCEL"
               variant="outlined"
-              color="info"
+              color="inherit"
               onClick={handleCancel}
             />
             <ButtonTemplate

@@ -10,10 +10,12 @@ const CustomTheme = (mode: "light" | "dark"): Theme =>
     palette: {
       mode: mode,
       primary: {
-        main: mode === "light" ? "#FE6B8B" : "#424242",
+        // main: mode === "light" ? "#FE6B8B" : "#424242",
+        main: mode === "light" ? "#FE6B8B" : "#FE6B8B",
       },
       secondary: {
-        main: mode === "light" ? "#FF8E53" : "#616161",
+        // main: mode === "light" ? "#FF8E53" : "#616161",
+        main: mode === "light" ? "#FF8E53" : "#FF8E53",
       },
       text: {
         primary: mode === "light" ? "#232f34" : "#fafafa",
@@ -22,7 +24,7 @@ const CustomTheme = (mode: "light" | "dark"): Theme =>
       } as CustomTypeText,
       background: {
         default: mode === "light" ? "#f1f5f9" : "#212121",
-        paper: mode === "light" ? "#fafafa" : "#616161",
+        paper: mode === "light" ? "#fafafa" : "#424242",
       },
     },
   });
