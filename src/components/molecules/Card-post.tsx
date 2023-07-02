@@ -6,12 +6,19 @@ type MyComponentProps = {
   title: string;
   date: string;
   onClick: (event: React.MouseEvent) => void;
+  redirect?: () => void;
 };
 
-const CardPost: React.FC<MyComponentProps> = ({ title, date, onClick }) => {
+const CardPost: React.FC<MyComponentProps> = ({
+  title,
+  date,
+  onClick,
+  redirect,
+}) => {
   return (
     <CardTemplate>
       <Box
+        onClick={redirect}
         display="flex"
         flexDirection="column"
         justifyContent="space-between"

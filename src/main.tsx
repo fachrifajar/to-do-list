@@ -1,10 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./index.css";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
+import store from "./store/index";
 
+import App from "./App.tsx";
 import Post from "./pages/post.tsx";
+import Detail from "./pages/detail.tsx";
 
 const router = createBrowserRouter([
   {
@@ -15,10 +19,20 @@ const router = createBrowserRouter([
     path: "/post",
     element: <Post />,
   },
+  {
+    path: "/detail/:id",
+    element: <Detail />,
+  },
 ]);
+
+const persistor = persistStore(store);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <RouterProvider router={router} />
+      </PersistGate>
+    </Provider>
   </React.StrictMode>
 );

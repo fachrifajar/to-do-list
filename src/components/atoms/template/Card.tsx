@@ -4,7 +4,7 @@ import { Card, SxProps, CardActionArea } from "@mui/material";
 type MyComponentProps = {
   sx?: SxProps;
   children?: React.ReactElement;
-  onClick?: (event: React.MouseEvent) => void;
+  onClick?: () => void;
 };
 
 const CardTemplate: React.FC<MyComponentProps> = ({

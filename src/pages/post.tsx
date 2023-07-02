@@ -13,6 +13,9 @@ import CardPost from "../components/molecules/Card-post";
 import ModalDelete from "../components/molecules/Modal-delete";
 import ModalSuccess from "../components/molecules/Modal-success";
 
+import * as listReducer from "../store/reducer/list";
+import { useDispatch } from "react-redux";
+
 const Post = () => {
   interface ListItem {
     id: number;
@@ -20,6 +23,7 @@ const Post = () => {
     created_at: string;
   }
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const storedTheme = localStorage.getItem("selectedTheme");
   const initialMode: "light" | "dark" =
@@ -84,6 +88,30 @@ const Post = () => {
     }
   };
 
+  const randomizeId = (): string => {
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < 15) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+  };
+
+  const handleClickCard = (data: any) => {
+    const randomId = randomizeId();
+
+    dispatch(
+      listReducer.setList({
+        ...data,
+      })
+    );
+    navigate(`/detail/${randomId}`);
+  };
+
   React.useEffect(() => {
     handleGetList();
   }, []);
@@ -123,6 +151,7 @@ const Post = () => {
                 color: "white",
                 fontWeight: "bold",
                 borderRadius: "20px",
+                marginTop: "0px",
                 background: `linear-gradient(45deg, ${primaryColor} 30%, ${secondaryColor} 90%)`,
                 "&:hover": {
                   background: `linear-gradient(45deg, ${lighten(
@@ -160,6 +189,7 @@ const Post = () => {
                         title: item?.title,
                       });
                     }}
+                    redirect={() => handleClickCard(item)}
                   />
                 );
               })
