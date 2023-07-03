@@ -350,7 +350,7 @@ const Detail = () => {
                 title="ADD"
                 sx={{
                   marginTop: "0px",
-                  width: "150px",
+                  width: {md: "150px", sm: "150px", xs: "100px"},
                   color: "white",
                   fontWeight: "bold",
                   borderRadius: "20px",
