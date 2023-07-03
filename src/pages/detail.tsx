@@ -12,6 +12,7 @@ import ContainerTemplate from "../components/atoms/template/Container";
 import ButtonTemplate from "../components/atoms/template/Button";
 import TextFieldTemplate from "../components/atoms/template/TextField";
 import ModalAddEdit from "../components/molecules/Modal-Add-Edit";
+import CardDetail from "../components/molecules/Card-detail";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
@@ -40,6 +41,13 @@ const Detail = () => {
   const [modalAdd, setModalAdd] = React.useState({
     value: false,
     status: "",
+  });
+  const [getTodoList, setGetTodoList] = React.useState([]);
+  const [checkedIds, setCheckedIds] = React.useState<number[]>([]);
+  const [unCheckedIds, setUncheckedIds] = React.useState<number[]>([]);
+  const [getProps, setgetProps] = React.useState({
+    title: "",
+    priority: "",
   });
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +89,104 @@ const Detail = () => {
     debounce(fetchChangeTitle, 2000)
   ).current;
 
+  const fetchDetail = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/todo-items?activity_group_id=${
+          reduxList?.id
+        }`
+      );
+
+      const getData = response?.data?.data;
+
+      if (getData.length > 0) {
+        setGetTodoList(getData);
+        setCheckedIds(
+          getData
+            .filter((item: any) => item.is_active === 0)
+            .map((item: any) => item.id)
+        );
+        setUncheckedIds(
+          getData
+            .filter((item: any) => item.is_active === 1)
+            .map((item: any) => item.id)
+        );
+      } else {
+        setGetTodoList([]);
+      }
+    } catch (error) {
+      console.log("ERROR fetchDetail", error);
+    }
+  };
+
+  const updateCheckedItems = async (
+    checkedIds: number[],
+    unCheckedIds: number[]
+  ) => {
+    try {
+      const promises = [];
+
+      for (let i = 0; i < checkedIds.length; i++) {
+        promises.push(
+          axios.patch(
+            `${import.meta.env.VITE_BASE_URL}/todo-items/${checkedIds[i]}`,
+            {
+              is_active: 0,
+            }
+          )
+        );
+      }
+
+      for (let i = 0; i < unCheckedIds.length; i++) {
+        promises.push(
+          axios.patch(
+            `${import.meta.env.VITE_BASE_URL}/todo-items/${unCheckedIds[i]}`,
+            {
+              is_active: 1,
+            }
+          )
+        );
+      }
+
+      await Promise.all(promises);
+    } catch (error) {
+      console.log("ERROR updateCheckedItems", error);
+    }
+  };
+
+  const debouncedUpdateCheckedItems = React.useRef(
+    debounce(updateCheckedItems, 2000)
+  ).current;
+
+  const handleAdd = async () => {
+    try {
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/todo-items/`, {
+        activity_group_id: reduxList?.id,
+        title: getProps?.title,
+        priority: getProps?.priority ? getProps?.priority : "very-high",
+      });
+      fetchDetail();
+    } catch (error) {
+      console.log("ERROR handleAdd", error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchDetail();
+  }, []);
+
+  React.useEffect(() => {
+    setUncheckedIds(
+      getTodoList
+        .filter((item: any) => !checkedIds.includes(item.id))
+        .map((item: any) => item.id)
+    );
+  }, [checkedIds]);
+
+  React.useEffect(() => {
+    debouncedUpdateCheckedItems(checkedIds, unCheckedIds);
+  }, [checkedIds, unCheckedIds]);
+
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -97,7 +203,11 @@ const Detail = () => {
               xs: "0 5vw 10vh 5vw",
             },
           }}>
-          <Box display="flex" alignItems="center" justifyContent="space-around">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            mb="5%">
             <Box display="flex" alignItems="center">
               <ChevronLeftIcon
                 onClick={() => navigate("/post")}
@@ -177,6 +287,63 @@ const Detail = () => {
             </Box>
           </Box>
 
+          {getTodoList.length === 0
+            ? null
+            : getTodoList.map((item: any, key: number) => {
+                let color;
+                switch (item?.priority) {
+                  case "very-high":
+                    color = "#ED4C5C";
+                    break;
+                  case "high":
+                    color = "#F8A541";
+                    break;
+                  case "normal":
+                    color = "#00A790";
+                    break;
+                  case "low":
+                    color = "#428BC1";
+                    break;
+                  case "very-low":
+                    color = "#8942C1";
+                    break;
+                  default:
+                    color = "#ED4C5C";
+                }
+                return (
+                  <CardDetail
+                    key={key}
+                    id={item?.id}
+                    checked={item?.is_active === 0}
+                    onChange={(id: number, isChecked: boolean) => {
+                      if (isChecked) {
+                        setCheckedIds((prevIds: number[]) => [...prevIds, id]);
+                      } else {
+                        setCheckedIds((prevIds: number[]) =>
+                          prevIds.filter((itemId: number) => itemId !== id)
+                        );
+                      }
+                    }}
+                    getColor={color}
+                    getText={item?.title}
+                    // isEdit={() => {
+                    //   renderTodoModalEdit(item?.id);
+                    // }}
+                    // isDelete={() => {
+                    //   renderTodoModalDelete(item?.id, item?.title);
+                    // }}
+                    sx={{
+                      textDecoration: checkedIds.includes(item?.id)
+                        ? "line-through"
+                        : "none",
+                      color: checkedIds.includes(item?.id)
+                        ? "#888888"
+                        : "text.primary",
+                    }}
+                  />
+                );
+              })}
+
           <ModalAddEdit
             open={modalAdd?.value}
             onClose={() =>
@@ -186,6 +353,21 @@ const Detail = () => {
               }))
             }
             status={modalAdd?.status}
+            onClick={() => {
+              handleAdd();
+            }}
+            getTitle={(e) =>
+              setgetProps((prevValue) => ({
+                ...prevValue,
+                title: e,
+              }))
+            }
+            getPriority={(e) => {
+              setgetProps((prevValue) => ({
+                ...prevValue,
+                priority: e,
+              }));
+            }}
           />
         </ContainerTemplate>
       </ThemeProvider>

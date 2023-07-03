@@ -4,7 +4,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 
 type MyComponentProps = {
   title: string;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent) => void;
   disabled?: boolean;
   isLoading?: boolean;
   sx?: SxProps;

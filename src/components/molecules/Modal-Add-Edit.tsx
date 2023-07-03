@@ -18,6 +18,10 @@ type ModalAddEditProps = {
   open: boolean;
   onClose: () => void;
   status: string;
+  onClick?: (event: React.MouseEvent) => void | undefined;
+  _onClick?: (event: React.MouseEvent) => void | undefined;
+  getTitle?: (e: any) => void | undefined;
+  getPriority?: (e: any) => void | undefined;
 };
 
 const priorityOptions = [
@@ -48,7 +52,14 @@ const priorityOptions = [
   },
 ];
 
-const ModalAddEdit = ({ open, onClose, status }: ModalAddEditProps) => {
+const ModalAddEdit = ({
+  open,
+  onClose,
+  status,
+  onClick,
+  getTitle,
+  getPriority,
+}: ModalAddEditProps) => {
   const [priority, setPriority] = React.useState("very-high");
   const [title, setTitle] = React.useState({
     value: "",
@@ -60,12 +71,12 @@ const ModalAddEdit = ({ open, onClose, status }: ModalAddEditProps) => {
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
 
-    if (inputValue.length < 5) {
+    if (inputValue.length < 3) {
       setTitle((prevValue) => ({
         ...prevValue,
         value: "",
         isErr: true,
-        errMsg: "Title can't be lower than 5 characters",
+        errMsg: "Title can't be lower than 3 characters",
       }));
     } else {
       setTitle((prevValue) => ({
@@ -74,11 +85,17 @@ const ModalAddEdit = ({ open, onClose, status }: ModalAddEditProps) => {
         isErr: false,
         errMsg: "",
       }));
+      if (getTitle) {
+        getTitle(inputValue);
+      }
     }
   };
 
   const handleChange = (event: any) => {
     setPriority(event.target.value);
+    if (getPriority) {
+      getPriority(event.target.value);
+    }
   };
 
   React.useEffect(() => {
@@ -195,6 +212,7 @@ const ModalAddEdit = ({ open, onClose, status }: ModalAddEditProps) => {
               alignItems="center"
               mt="5%">
               <ButtonTemplate
+                onClick={onClick}
                 disabled={isDisabled}
                 title={status.toLocaleUpperCase()}
                 color="inherit"
