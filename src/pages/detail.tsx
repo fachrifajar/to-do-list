@@ -14,6 +14,8 @@ import TextFieldTemplate from "../components/atoms/template/TextField";
 import ModalAddEdit from "../components/molecules/Modal-Add-Edit";
 import CardDetail from "../components/molecules/Card-detail";
 
+
+
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
 
@@ -41,6 +43,7 @@ const Detail = () => {
   const [modalAdd, setModalAdd] = React.useState({
     value: false,
     status: "",
+    id: 0,
   });
   const [getTodoList, setGetTodoList] = React.useState([]);
   const [checkedIds, setCheckedIds] = React.useState<number[]>([]);
@@ -165,6 +168,21 @@ const Detail = () => {
         title: getProps?.title,
         priority: getProps?.priority ? getProps?.priority : "very-high",
       });
+      fetchDetail();
+    } catch (error) {
+      console.log("ERROR handleAdd", error);
+    }
+  };
+
+  const handleEdit = async () => {
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_BASE_URL}/todo-items/${modalAdd?.id}`,
+        {
+          title: getProps?.title,
+          priority: getProps?.priority,
+        }
+      );
       fetchDetail();
     } catch (error) {
       console.log("ERROR handleAdd", error);
@@ -326,9 +344,14 @@ const Detail = () => {
                     }}
                     getColor={color}
                     getText={item?.title}
-                    // isEdit={() => {
-                    //   renderTodoModalEdit(item?.id);
-                    // }}
+                    isEdit={() => {
+                      setModalAdd((prevValue) => ({
+                        ...prevValue,
+                        value: true,
+                        status: "edit",
+                        id: item?.id,
+                      }));
+                    }}
                     // isDelete={() => {
                     //   renderTodoModalDelete(item?.id, item?.title);
                     // }}
@@ -354,7 +377,11 @@ const Detail = () => {
             }
             status={modalAdd?.status}
             onClick={() => {
-              handleAdd();
+              if (modalAdd?.status === "add") {
+                handleAdd();
+              } else {
+                handleEdit();
+              }
             }}
             getTitle={(e) =>
               setgetProps((prevValue) => ({
@@ -368,6 +395,7 @@ const Detail = () => {
                 priority: e,
               }));
             }}
+            getId={modalAdd?.id}
           />
         </ContainerTemplate>
       </ThemeProvider>

@@ -13,7 +13,7 @@ type TextFieldProps = {
   onChange?:
     | React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>
     | undefined;
-  value?: string;
+  value?: any;
   helperText?: React.ReactNode;
   type?: React.HTMLInputTypeAttribute | undefined;
   InputProps?: any;

@@ -1,5 +1,5 @@
 import React from "react";
-
+import axios from "axios";
 import {
   Modal,
   Card,
@@ -22,6 +22,7 @@ type ModalAddEditProps = {
   _onClick?: (event: React.MouseEvent) => void | undefined;
   getTitle?: (e: any) => void | undefined;
   getPriority?: (e: any) => void | undefined;
+  getId: any;
 };
 
 const priorityOptions = [
@@ -59,6 +60,7 @@ const ModalAddEdit = ({
   onClick,
   getTitle,
   getPriority,
+  getId,
 }: ModalAddEditProps) => {
   const [priority, setPriority] = React.useState("very-high");
   const [title, setTitle] = React.useState({
@@ -106,6 +108,32 @@ const ModalAddEdit = ({
     }
   }, [title?.value]);
 
+  const handleGetDetail = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/todo-items/${getId}
+        }`
+      );
+
+      setPriority(response?.data?.priority);
+
+      if (getTitle) {
+        getTitle(response?.data?.title);
+      }
+      if (getPriority) {
+        getPriority(response?.data?.priority);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (status === "edit") {
+      handleGetDetail();
+    }
+  }, [getId]);
+
   return (
     <>
       <Modal
@@ -115,7 +143,7 @@ const ModalAddEdit = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          //   marginBottom: "50vh",
+    
         }}>
         <Card
           sx={{
