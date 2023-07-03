@@ -18,7 +18,6 @@ import ModalSuccess from "../components/molecules/Modal-success";
 import SortDetail from "../components/molecules/Sort-detail";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ImportExportIcon from "@mui/icons-material/ImportExport";
 
 const Detail = () => {
   const navigate = useNavigate();
