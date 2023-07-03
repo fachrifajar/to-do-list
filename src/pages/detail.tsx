@@ -13,8 +13,9 @@ import ButtonTemplate from "../components/atoms/template/Button";
 import TextFieldTemplate from "../components/atoms/template/TextField";
 import ModalAddEdit from "../components/molecules/Modal-Add-Edit";
 import CardDetail from "../components/molecules/Card-detail";
-
-
+import ModalDelete from "../components/molecules/Modal-delete";
+import ModalSuccess from "../components/molecules/Modal-success";
+import SortDetail from "../components/molecules/Sort-detail";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ImportExportIcon from "@mui/icons-material/ImportExport";
@@ -45,13 +46,20 @@ const Detail = () => {
     status: "",
     id: 0,
   });
-  const [getTodoList, setGetTodoList] = React.useState([]);
+  const [getTodoList, setGetTodoList] = React.useState<any[]>([]);
   const [checkedIds, setCheckedIds] = React.useState<number[]>([]);
   const [unCheckedIds, setUncheckedIds] = React.useState<number[]>([]);
   const [getProps, setgetProps] = React.useState({
     title: "",
     priority: "",
   });
+  const [modalDeleteOpen, setModalDeleteOpen] = React.useState({
+    isOpen: false,
+    id: 0,
+    title: "",
+  });
+  const [modalSuccessOpen, setModalSuccessOpen] = React.useState(false);
+  const [selectedSort, setSelectedSort] = React.useState(null);
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -169,6 +177,10 @@ const Detail = () => {
         priority: getProps?.priority ? getProps?.priority : "very-high",
       });
       fetchDetail();
+      setModalAdd((prevValue) => ({
+        ...prevValue,
+        value: false,
+      }));
     } catch (error) {
       console.log("ERROR handleAdd", error);
     }
@@ -184,6 +196,10 @@ const Detail = () => {
         }
       );
       fetchDetail();
+      setModalAdd((prevValue) => ({
+        ...prevValue,
+        value: false,
+      }));
     } catch (error) {
       console.log("ERROR handleAdd", error);
     }
@@ -204,6 +220,46 @@ const Detail = () => {
   React.useEffect(() => {
     debouncedUpdateCheckedItems(checkedIds, unCheckedIds);
   }, [checkedIds, unCheckedIds]);
+
+  const handleDeleteDetail = async () => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/todo-items/${modalDeleteOpen?.id}`
+      );
+
+      fetchDetail();
+      setModalDeleteOpen((prevValue) => ({
+        ...prevValue,
+        isOpen: false,
+      }));
+
+      setModalSuccessOpen(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sortTodoList = (todoList: any, selectedSort: any) => {
+    const sortedList = [...todoList];
+    switch (selectedSort) {
+      case "terbaru":
+        return sortedList.sort((a, b) => b.id - a.id);
+      case "terlama":
+        return sortedList.sort((a, b) => a.id - b.id);
+      case "a-z":
+        return sortedList.sort((a, b) => a.title.localeCompare(b.title));
+      case "z-a":
+        return sortedList.sort((a, b) => b.title.localeCompare(a.title));
+      case "belum-selesai":
+        return sortedList.sort((a, b) => a.is_active - b.is_active);
+      default:
+        return sortedList;
+    }
+  };
+
+  React.useEffect(() => {
+    setGetTodoList(sortTodoList(getTodoList, selectedSort));
+  }, [selectedSort]);
 
   return (
     <>
@@ -268,7 +324,7 @@ const Detail = () => {
               />
             </Box>
             <Box display="flex" alignItems="center">
-              <ImportExportIcon
+              {/* <ImportExportIcon
                 sx={{
                   "&:hover": {
                     cursor: "pointer",
@@ -276,6 +332,12 @@ const Detail = () => {
                   },
                   fontSize: { md: "40px", sm: "40px", xs: "30px" },
                   mr: { md: 3, sm: 3, xs: 1 },
+                }}
+              /> */}
+
+              <SortDetail
+                _selectedSort={(event: any) => {
+                  setSelectedSort(event);
                 }}
               />
               <ButtonTemplate
@@ -305,67 +367,75 @@ const Detail = () => {
             </Box>
           </Box>
 
-          {getTodoList.length === 0
-            ? null
-            : getTodoList.map((item: any, key: number) => {
-                let color;
-                switch (item?.priority) {
-                  case "very-high":
-                    color = "#ED4C5C";
-                    break;
-                  case "high":
-                    color = "#F8A541";
-                    break;
-                  case "normal":
-                    color = "#00A790";
-                    break;
-                  case "low":
-                    color = "#428BC1";
-                    break;
-                  case "very-low":
-                    color = "#8942C1";
-                    break;
-                  default:
-                    color = "#ED4C5C";
-                }
-                return (
-                  <CardDetail
-                    key={key}
-                    id={item?.id}
-                    checked={item?.is_active === 0}
-                    onChange={(id: number, isChecked: boolean) => {
-                      if (isChecked) {
-                        setCheckedIds((prevIds: number[]) => [...prevIds, id]);
-                      } else {
-                        setCheckedIds((prevIds: number[]) =>
-                          prevIds.filter((itemId: number) => itemId !== id)
-                        );
-                      }
-                    }}
-                    getColor={color}
-                    getText={item?.title}
-                    isEdit={() => {
-                      setModalAdd((prevValue) => ({
-                        ...prevValue,
-                        value: true,
-                        status: "edit",
-                        id: item?.id,
-                      }));
-                    }}
-                    // isDelete={() => {
-                    //   renderTodoModalDelete(item?.id, item?.title);
-                    // }}
-                    sx={{
-                      textDecoration: checkedIds.includes(item?.id)
-                        ? "line-through"
-                        : "none",
-                      color: checkedIds.includes(item?.id)
-                        ? "#888888"
-                        : "text.primary",
-                    }}
-                  />
-                );
-              })}
+          {getTodoList.length === 0 ? (
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <img src="/no-list.png" alt="no list" />
+            </Box>
+          ) : (
+            getTodoList.map((item: any, key: number) => {
+              let color;
+              switch (item?.priority) {
+                case "very-high":
+                  color = "#ED4C5C";
+                  break;
+                case "high":
+                  color = "#F8A541";
+                  break;
+                case "normal":
+                  color = "#00A790";
+                  break;
+                case "low":
+                  color = "#428BC1";
+                  break;
+                case "very-low":
+                  color = "#8942C1";
+                  break;
+                default:
+                  color = "#ED4C5C";
+              }
+              return (
+                <CardDetail
+                  key={key}
+                  id={item?.id}
+                  checked={item?.is_active === 0}
+                  onChange={(id: number, isChecked: boolean) => {
+                    if (isChecked) {
+                      setCheckedIds((prevIds: number[]) => [...prevIds, id]);
+                    } else {
+                      setCheckedIds((prevIds: number[]) =>
+                        prevIds.filter((itemId: number) => itemId !== id)
+                      );
+                    }
+                  }}
+                  getColor={color}
+                  getText={item?.title}
+                  isEdit={() => {
+                    setModalAdd((prevValue) => ({
+                      ...prevValue,
+                      value: true,
+                      status: "edit",
+                      id: item?.id,
+                    }));
+                  }}
+                  isDelete={() => {
+                    setModalDeleteOpen({
+                      isOpen: true,
+                      id: item?.id,
+                      title: item?.title,
+                    });
+                  }}
+                  sx={{
+                    textDecoration: checkedIds.includes(item?.id)
+                      ? "line-through"
+                      : "none",
+                    color: checkedIds.includes(item?.id)
+                      ? "#888888"
+                      : "text.primary",
+                  }}
+                />
+              );
+            })
+          )}
 
           <ModalAddEdit
             open={modalAdd?.value}
@@ -396,6 +466,30 @@ const Detail = () => {
               }));
             }}
             getId={modalAdd?.id}
+          />
+
+          <ModalDelete
+            open={modalDeleteOpen?.isOpen}
+            onClose={() => {
+              setModalDeleteOpen((prevValue) => ({
+                ...prevValue,
+                isOpen: false,
+              }));
+            }}
+            title={modalDeleteOpen?.title}
+            handleDelete={() => handleDeleteDetail()}
+            handleCancel={() =>
+              setModalDeleteOpen((prevValue) => ({
+                ...prevValue,
+                isOpen: false,
+              }))
+            }
+          />
+
+          <ModalSuccess
+            open={modalSuccessOpen}
+            onClose={() => setModalSuccessOpen(false)}
+            title={modalDeleteOpen?.title}
           />
         </ContainerTemplate>
       </ThemeProvider>

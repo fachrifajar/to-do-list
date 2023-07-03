@@ -243,7 +243,7 @@ const ModalAddEdit = ({
                 onClick={onClick}
                 disabled={isDisabled}
                 title={status.toLocaleUpperCase()}
-                color="inherit"
+                color="success"
                 sx={{ fontWeight: "bold", width: "50%", borderRadius: "20px" }}
               />
             </Box>
