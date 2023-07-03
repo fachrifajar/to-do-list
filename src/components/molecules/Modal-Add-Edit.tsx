@@ -11,8 +11,8 @@ import {
   InputLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import TextFieldTemplate from "../atoms/template/TextField";
-import ButtonTemplate from "../atoms/template/Button";
+import TextFieldTemplate from "../atoms/TextField";
+import ButtonTemplate from "../atoms/Button";
 
 type ModalAddEditProps = {
   open: boolean;
@@ -143,7 +143,6 @@ const ModalAddEdit = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-    
         }}>
         <Card
           sx={{

@@ -4,9 +4,9 @@ import { lighten } from "polished";
 import { Typography, Box, ThemeProvider } from "@mui/material";
 
 // COMPONENTS
-import ContainerTemplate from "./components/atoms/template/Container";
+import ContainerTemplate from "./components/atoms/Container";
 import Navbar from "./components/organisms/Navbar";
-import ButtonTemplate from "./components/atoms/template/Button";
+import ButtonTemplate from "./components/atoms/Button";
 import CustomTheme from "./theme";
 
 function App() {

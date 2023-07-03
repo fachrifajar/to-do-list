@@ -6,7 +6,7 @@ import {
   IconButton,
   SxProps,
 } from "@mui/material";
-import ContainerTemplate from "../atoms/template/Container";
+import ContainerTemplate from "../atoms/Container";
 import React from "react";
 import CustomTheme from "../../theme";
 

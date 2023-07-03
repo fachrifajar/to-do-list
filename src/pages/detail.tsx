@@ -8,9 +8,9 @@ import { debounce } from "lodash";
 
 import CustomTheme from "../theme";
 import Navbar from "../components/organisms/Navbar";
-import ContainerTemplate from "../components/atoms/template/Container";
-import ButtonTemplate from "../components/atoms/template/Button";
-import TextFieldTemplate from "../components/atoms/template/TextField";
+import ContainerTemplate from "../components/atoms/Container";
+import ButtonTemplate from "../components/atoms/Button";
+import TextFieldTemplate from "../components/atoms/TextField";
 import ModalAddEdit from "../components/molecules/Modal-Add-Edit";
 import CardDetail from "../components/molecules/Card-detail";
 import ModalDelete from "../components/molecules/Modal-delete";

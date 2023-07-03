@@ -1,6 +1,6 @@
 import { Modal, SxProps, Card, Typography, Box } from "@mui/material";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-import ButtonTemplate from "../atoms/template/Button";
+import ButtonTemplate from "../atoms/Button";
 
 type MyComponentProps = {
   sx?: SxProps;

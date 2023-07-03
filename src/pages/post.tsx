@@ -7,8 +7,8 @@ import AddIcon from "@mui/icons-material/Add";
 import CustomTheme from "../theme";
 
 import Navbar from "../components/organisms/Navbar";
-import ButtonTemplate from "../components/atoms/template/Button";
-import ContainerTemplate from "../components/atoms/template/Container";
+import ButtonTemplate from "../components/atoms/Button";
+import ContainerTemplate from "../components/atoms/Container";
 import CardPost from "../components/molecules/Card-post";
 import ModalDelete from "../components/molecules/Modal-delete";
 import ModalSuccess from "../components/molecules/Modal-success";
